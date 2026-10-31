@@ -192,7 +192,6 @@ function taskRow(x, { showDate = false, over = false, extra = '' } = {}) {
 
 function renderHome() {
   const now = new Date(), td = today();
-  $('#homeDate').textContent = `${DOW[now.getDay()]}, ${MON[now.getMonth()]} ${now.getDate()}`;
 
   // progress
   const todays = onDay(td), done = todays.filter(x => x.done).length, total = todays.length;
@@ -322,6 +321,7 @@ function go(p) {
   page = p;
   $$('.page').forEach(el => el.classList.toggle('active', el.id === 'page-' + p));
   $$('.tab').forEach(el => el.classList.toggle('active', el.dataset.page === p));
+  $('#navAdd').hidden = p === 'notes';
   window.scrollTo(0, 0);
   render();
 }
