@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Calendar</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Quote splash: tap to skip, hold to keep -->
+<div id="splash" class="splash" role="button" tabindex="0" aria-label="Tap to continue, hold to keep reading">
+  <div class="splash-inner">
+    <div class="splash-mark">⚔</div>
+    <blockquote id="splashQuote"></blockquote>
+    <div id="splashAuthor" class="splash-author"></div>
+    <p id="splashCtx" class="splash-ctx"></p>
+  </div>
+  <div class="splash-hint">tap to continue · hold to keep reading</div>
+  <div class="splash-bar"><i id="splashBar"></i></div>
+</div>
+
+<main id="app" class="app" aria-hidden="true">
+
+  <!-- HOME -->
+  <section id="page-home" class="page active">
+    <header class="top">
+      <div>
+        <div id="homeDate" class="eyebrow"></div>
+        <h1>Mission Board</h1>
+      </div>
+      <button class="add-btn" data-action="add" aria-label="Add task">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </header>
+    <div id="homeProgress" class="progress-card"></div>
+    <div class="month-nav">
+      <button class="round" data-action="month-prev" aria-label="Previous month">‹</button>
+      <button id="monthTitle" class="month-title" data-action="month-today"></button>
+      <button class="round" data-action="month-next" aria-label="Next month">›</button>
+    </div>
+    <div class="dow"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+    <div id="monthGrid" class="month-grid"></div>
+    <div class="legend"><span><i class="lg tk"></i>Task</span><span><i class="lg nt"></i>From notes</span></div>
+    <button id="tasksToggle" class="tasks-bar" data-action="toggle-tasks"></button>
+    <div id="taskList" class="task-list"></div>
+  </section>
+
+  <!-- WEEK -->
+  <section id="page-week" class="page">
+    <header class="top week-top">
+      <button class="week-month" data-action="week-today" id="weekMonth"></button>
+      <button class="pill" data-action="week-today">Today</button>
+    </header>
+    <div class="week-strip">
+      <button class="round sm" data-action="week-prev" aria-label="Previous week">‹</button>
+      <div id="weekDays" class="week-days"></div>
+      <button class="round sm" data-action="week-next" aria-label="Next week">›</button>
+    </div>
+    <div id="dayView" class="day-view"></div>
+  </section>
+
+  <!-- NOTES -->
+  <section id="page-notes" class="page">
+    <div id="notesList">
+      <header class="top"><h1>Notes</h1></header>
+      <label class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="noteSearch" type="search" placeholder="Search" autocomplete="off">
+      </label>
+      <div id="noteGroups"></div>
+      <div id="noteCount" class="note-count"></div>
+    </div>
+    <div id="noteEditor" class="note-editor" hidden>
+      <div class="editor-bar">
+        <button class="back" data-action="note-back"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>Notes</button>
+        <button class="icon-btn" data-action="note-delete" aria-label="Delete note">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        </button>
+      </div>
+      <div id="noteChips" class="note-chips"></div>
+      <textarea id="noteText" placeholder="Title&#10;Start typing… dates like “Nov 5” or 12/24 show up on your calendar" spellcheck="true"></textarea>
+    </div>
+    <button id="newNote" class="compose" data-action="note-new" aria-label="New note">
+      <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    </button>
+  </section>
+
+  <nav class="tabbar">
+    <button class="tab active" data-page="home"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Home</span></button>
+    <button class="tab" data-page="week"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 13h8M8 17h5"/></svg><span>Week</span></button>
+    <button class="tab" data-page="notes"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h7"/></svg><span>Notes</span></button>
+  </nav>
+</main>
+
+<!-- Add / edit sheet -->
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-bg" data-action="sheet-close"></div>
+  <form id="sheetForm" class="sheet-card" autocomplete="off">
+    <div class="grab"></div>
+    <h2 id="sheetTitle">New task</h2>
+    <input id="fTitle" type="text" placeholder="What's the mission?" maxlength="80" required>
+    <div class="row2">
+      <label>Date<input id="fDate" type="date" required></label>
+      <label>Time <small>(optional)</small><input id="fTime" type="time"></label>
+    </div>
+    <label>Repeat
+      <div class="seg" id="fRepeat">
+        <button type="button" data-v="none" class="on">Once</button>
+        <button type="button" data-v="daily">Daily habit</button>
+        <button type="button" data-v="weekly">Weekly</button>
+      </div>
+    </label>
+    <p class="fine">Completed tasks are erased a week after you finish them.</p>
+    <div class="sheet-actions">
+      <button type="button" id="fDelete" class="danger" hidden>Delete</button>
+      <button type="button" class="ghost" data-action="sheet-close">Cancel</button>
+      <button type="submit" class="primary">Save</button>
+    </div>
+  </form>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
